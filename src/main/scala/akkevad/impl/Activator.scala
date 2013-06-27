@@ -1,9 +1,9 @@
-package akka.osgi.event.impl
+package akkevad.impl
 
 import org.osgi.framework._
 import org.osgi.util.tracker.{ServiceTrackerCustomizer, ServiceTracker}
 import org.osgi.service.event.{EventConstants, EventAdmin, EventHandler}
-import akka.actor.{ActorRef, Props, ActorSystem}
+import akka.actor.{Props, ActorRef, ActorSystem}
 import ActivatorUtils._
 import akka.osgi.ActorSystemActivator
 import java.util
@@ -20,19 +20,19 @@ class Activator extends ActorSystemActivator {
 
     val customizer = new EventHandlerCustomizer(context, eventAdminActor)
     tracker = Option(new ServiceTracker[EventHandler, EventHandler](context, classOf[EventHandler], customizer))
-    tracker.get.open
+    tracker.get.open()
   }
 
   override def stop(context: BundleContext) {
     super.stop(context)
 
     if (!tracker.isEmpty) {
-      tracker.get.close
+      tracker.get.close()
       tracker = None
     }
 
     if (!eventAdminReg.isEmpty) {
-      eventAdminReg.get.unregister
+      eventAdminReg.get.unregister()
       eventAdminReg = null
     }
   }

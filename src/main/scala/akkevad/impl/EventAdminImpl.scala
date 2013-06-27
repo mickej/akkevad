@@ -1,4 +1,4 @@
-package akka.osgi.event.impl
+package akkevad.impl
 
 import org.osgi.service.event.{EventHandler, EventAdmin, Event}
 import akka.pattern.ask

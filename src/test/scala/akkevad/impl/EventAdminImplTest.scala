@@ -1,8 +1,6 @@
-package akka.osgi.event.impl
+package akkevad.impl
 
-import scala.concurrent.duration._
 import org.scalatest.matchers.MustMatchers
-import akka.actor.{EmptyLocalActorRef, ActorSystem}
 import org.osgi.service.event.{EventHandler, Event}
 import java.util.Collections
 import akka.testkit._
@@ -11,6 +9,7 @@ import org.mockito.{Matchers, Mockito}
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import akka.actor.ActorSystem
 
 class EventAdminImplTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
     with FunSuite with MustMatchers with BeforeAndAfterAll with MockitoSugar {
@@ -25,7 +24,7 @@ class EventAdminImplTest(_system: ActorSystem) extends TestKit(_system) with Imp
     system.shutdown()
   }
 
-  def waitForThis(path : String) : Boolean = {
+  /*def waitForThis(path : String) : Boolean = {
     val ref = system.actorFor(path)
     !ref.isInstanceOf[EmptyLocalActorRef]
   }
@@ -33,9 +32,10 @@ class EventAdminImplTest(_system: ActorSystem) extends TestKit(_system) with Imp
   test("handle the register event") {
     adminActor ! RegisterTopic("akka/osgi/event/is/this", handler, None, "akka/osgi/event/is/this")
     assert(TestKit.awaitCond(waitForThis("/user/admin/akka/osgi/event/is/this"), 5 second, 10 millis, noThrow = true))
-  }
+  }*/
 
   test("handle the synchronous send event") {
+    adminActor ! RegisterTopic("akka/osgi/event/is/this", handler, None, "akka/osgi/event/is/this")
     adminActor ! RegisterTopic("akka/osgi/event", handler, None, "akka/osgi/event")
     val e = new Event("akka/osgi/event", Collections.emptyMap[String, Object])
     admin.sendEvent(e)

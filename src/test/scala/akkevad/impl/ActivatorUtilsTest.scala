@@ -1,11 +1,8 @@
-package akka.osgi.event.impl
+package akkevad.impl
 
 import org.scalatest.FunSuite
 import java.util.Arrays
 
-/**
- * Created by micke on 6/25/13.
- */
 class ActivatorUtilsTest extends FunSuite {
   test("utils topics should handle a simple string") {
     assert(ActivatorUtils.topics("test/topic1") == List("test/topic1"))

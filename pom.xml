@@ -10,22 +10,6 @@
         <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     </properties>
 
-    <!--repositories>
-        <repository>
-            <id>scala-tools.org</id>
-            <name>Scala-Tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>scala-tools.org</id>
-            <name>Scala-Tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </pluginRepository>
-    </pluginRepositories-->
-
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -88,7 +72,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>akka.osgi.event.impl.Activator</Bundle-Activator>
+                        <Bundle-Activator>akkevad.impl.Activator</Bundle-Activator>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>!*</Export-Package>
                         <Import-Package>akka.actor.*,*</Import-Package>
@@ -109,8 +93,8 @@
                     </execution>
                 </executions>
                 <configuration>
-			<recompileMode>incremental</recompileMode>
-			<scalaVersion>${scala.version}</scalaVersion>
+			        <recompileMode>incremental</recompileMode>
+			        <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>
         </plugins>
