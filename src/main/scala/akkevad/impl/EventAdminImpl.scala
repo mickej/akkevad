@@ -9,6 +9,8 @@ import akka.util.Timeout
 import scala.Some
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.osgi.framework.Filter
+import com.typesafe.config.Config
+import java.util.concurrent.TimeUnit
 
 /**
  * Event used when requesting actors interested in a specific topic.
@@ -39,18 +41,21 @@ case class RegisterTopics(topics : List[String], handler : EventHandler, filter 
  *
  * @param eventActor Event admin actor
  */
-class EventAdminImpl(eventActor : ActorRef) extends EventAdmin {
+class EventAdminImpl(eventActor : ActorRef, config : Config) extends EventAdmin {
+  val sendTimeout = Duration(config.getMilliseconds("akkevad.sendEvent.timeout"), TimeUnit.MILLISECONDS)
+
   def postEvent(event : Event) {
     eventActor ! PostEvent(event.getTopic.concat("/"), event)
   }
 
   def sendEvent(event : Event) {
-    // TODO: This is probably not very safe way of doing this...
-    // Infinite duration might be a bad choice. Lets fix this some time...
+    implicit val timeout = Timeout(sendTimeout)
 
-    implicit val timeout = Timeout(10 seconds)
+    // Send RequestActors to the event admin actor. This will then go down the hierarchy and result
+    // in a list of actors that are interested in the topic. Those actors will then have a
+    // WaitEvent/WilderWaitEvent sent to them, which will trigger the EventHandler.
     val future = eventActor ? RequestActors(event.getTopic.concat("/"), null, List(), event.getTopic)
-    val resp = Await.result(future, Duration.Inf).asInstanceOf[ResponseActors]
+    val resp = Await.result(future, sendTimeout).asInstanceOf[ResponseActors]
 
     val futures =
       if (resp.interested == null) List.empty
@@ -58,7 +63,7 @@ class EventAdminImpl(eventActor : ActorRef) extends EventAdmin {
     val wilders = resp.wilder map (r => r ? WilderWaitEvent(event.getTopic, event))
 
     val futureList = Future.sequence(futures ::: wilders)
-    Await result(futureList, Duration.Inf)
+    Await result(futureList, sendTimeout)
   }
 }
 

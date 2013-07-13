@@ -22,11 +22,11 @@ class ActivatorUtilsTest extends FunSuite {
     }
   }
 
-  //test("utils topics should ignore other list objects") {
-  //  intercept[IllegalArgumentException] {
-  //    ActivatorUtils.topics(Arrays.asList(new Object, new Object))
-  //  }
-  //}
+  test("utils topics should ignore other list objects") {
+    intercept[IllegalArgumentException] {
+      ActivatorUtils.topics(Arrays.asList(new Object, new Object))
+    }
+  }
 
   test("utils topics should ignore other array objects") {
     intercept[IllegalArgumentException] {

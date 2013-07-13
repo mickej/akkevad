@@ -15,7 +15,7 @@ class EventAdminImplTest(_system: ActorSystem) extends TestKit(_system) with Imp
     with FunSuite with MustMatchers with BeforeAndAfterAll with MockitoSugar {
 
   val adminActor = TestActorRef(new EventAdminActor(), "admin")
-  val admin : EventAdminImpl = new EventAdminImpl(adminActor)
+  val admin : EventAdminImpl = new EventAdminImpl(adminActor, _system.settings.config)
   val handler = mock[EventHandler]
 
   def this() = this(ActorSystem("MySpec"))

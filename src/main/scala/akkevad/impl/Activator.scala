@@ -7,6 +7,8 @@ import akka.actor.{Props, ActorRef, ActorSystem}
 import ActivatorUtils._
 import akka.osgi.ActorSystemActivator
 import java.util
+import scala.collection.JavaConversions
+import akka.actor.IOManager.Settings
 
 class Activator extends ActorSystemActivator {
   var tracker : Option[ServiceTracker[EventHandler, EventHandler]] = None
@@ -14,7 +16,7 @@ class Activator extends ActorSystemActivator {
 
   def configure(context: BundleContext, system: ActorSystem) {
     val eventAdminActor = system.actorOf(Props(new EventAdminActor()), "eventAdminActor")
-    val eventAdmin = new EventAdminImpl(eventAdminActor)
+    val eventAdmin = new EventAdminImpl(eventAdminActor, system.settings.config)
 
     eventAdminReg = Option(context.registerService(classOf[EventAdmin], eventAdmin, null))
 
@@ -76,9 +78,24 @@ object ActivatorUtils {
    * @return A list of topics.
    */
   def topics(tcs : Any) : List[String] = tcs match {
-    case str : String => List(str)
-    case arr : Array[String] => arr.toList
-    case coll : util.Collection[String] => coll.toArray(new Array[String](coll.size())).toList // How should this be done?
-    case _ => throw new IllegalArgumentException
+      case str : String => List(str)
+      case arr : Array[String] => arr.toList
+      case StringCollectionMatcher(coll) => coll
+      case _ => throw new IllegalArgumentException
+  }
+}
+
+object StringCollectionMatcher {
+  def unapply(coll : util.Collection[_]): Option[List[String]] = {
+    if (coll == null) None
+    else {
+      val list = JavaConversions.collectionAsScalaIterable(coll).toList
+      var l : List[String] = List()
+
+      list.reverse.foreach(x => if (x.isInstanceOf[String]) l = x.asInstanceOf[String] :: l)
+      if (l.size == list.size) {
+        Some(l)
+      } else None
+    }
   }
 }
